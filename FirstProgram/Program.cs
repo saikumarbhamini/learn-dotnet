@@ -39,16 +39,22 @@ class Program
         CreateFiles(resultDirPath.ToString(), "created_on.txt", $"This file created on {DateTime.Now.ToString()}");
     }
 
-    static void CalculateSalesTotal(){
-        var salesJson = File.ReadAllText($"stores{Path.DirectorySeparatorChar}201{Path.DirectorySeparatorChar}sales.json");
-        var salesData = JsonConvert.DeserializeObject<SalesTotal>(salesJson);
-        Console.WriteLine(salesData?.Total);
+    static void CalculateSalesTotal(List<string> salesFiles){
+        double salesTotal = 0;
+        foreach(var file in salesFiles)
+        {
+            var salesJson = File.ReadAllText(file);
+            var salesData = JsonConvert.DeserializeObject<SalesTotal>(salesJson);
+            salesTotal += salesData?.Total ?? 0;
+
+        }
+        Console.WriteLine($"Sales Total: {salesTotal}");
+
+        // Append data to the file
+        File.AppendAllText(Path.Combine("stores", "salesTotalDir", "totals.txt"), $"{salesTotal}{Environment.NewLine}");
     }
 
-    class SalesTotal
-    {
-        public double Total { get; set;}
-    }
+    record SalesTotal(double Total);
 
     static void Main()
     {
@@ -67,11 +73,10 @@ class Program
 
         var storesDir = Path.Combine(currentDir, "stores");
         InitialWorkOnDirAndFiles(storesDir);
-        var salesTotalDirPath = Path.Combine(currentDir, "stores");
-        var resultPath = CreateDir(salesTotalDirPath, "salesTotalDir");
+        var resultPath = CreateDir(storesDir, "salesTotalDir");
         var salesFiles = FindFiles(storesDir);
 
         File.WriteAllText(Path.Combine(resultPath.ToString(), "totals.txt"), string.Empty);
-        CalculateSalesTotal();
+        CalculateSalesTotal(salesFiles);
     }
 }
