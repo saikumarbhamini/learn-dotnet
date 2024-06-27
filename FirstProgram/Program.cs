@@ -1,4 +1,11 @@
-﻿public abstract class Figure
+﻿/*
+Abstract class contains abstract and non-anstract methods.
+- You can't create instance of an abstract class.
+- The child class should implement all abstract methods of abstract class 
+that it inherits before to be able to consume the non-adstract methods.
+*/
+
+public abstract class Figure
 {
     public double Width, Height, Radius;
     public const float PI = 3.14f;
